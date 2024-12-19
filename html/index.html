@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/bootstrap.css">
+  <script src="../js/jquery-3.7.1.min.js"></script>
+  <script src="../js/bootstrap.js"></script>
+  <style>
+    header{
+      background-image: url(../img/img.jpg);
+      background-size: cover;
+      width: 100%;
+      height: 200px;
+      text-align: center;
+;
+    }
+  </style>
+  <script>
+  $(document).ready(function () {
+    // Thay đổi thời gian học theo khóa học
+    $("#course").change(function () {
+        const durations = {
+            "Anh văn cơ bản": "3 tháng",
+            "Anh văn giao tiếp": "6 tháng",
+            "Luyện thi IELTS": "12 tháng",
+        };
+        $("#courseDuration").val(durations[$(this).val()] || "");
+    });
+
+    // Xử lý khi form được submit
+    $("#registrationForm").submit(function (e) {
+        e.preventDefault();
+
+        const fullName = $("#fullName").val().trim();
+        const birthDate = $("#birthDate").val();
+        const phoneNumber = $("#phoneNumber").val().trim();
+        const email = $("#email").val().trim();
+        const course = $("#course").val();
+        const courseDuration = $("#courseDuration").val();
+        const learningMode = $("input[name='learningMode']:checked").val();
+        const skills = $("input[name='skills']:checked")
+            .map(function () {
+                return $(this).val();
+            })
+            .get();
+
+        const nameRegex = /^[A-Z][a-z]*(\s[A-Z][a-z]*)*$/;
+        const phoneRegex = /^(09|03|08)\d{8}$/;
+        const emailRegex = /^[^@]+@[^@]+\.com$/;
+
+        // Kiểm tra các điều kiện
+        if (!nameRegex.test(fullName)) {
+            alert("Họ tên không hợp lệ. Ký tự đầu mỗi từ phải viết hoa.");
+            $("#fullName").focus();
+            return;
+        }
+        if (new Date(birthDate) >= new Date()) {
+            alert("Ngày sinh phải trước ngày hiện tại.");
+            $("#birthDate").focus();
+            return;
+        }
+        if (!phoneRegex.test(phoneNumber)) {
+            alert("Số điện thoại không hợp lệ. Phải là 10 số và bắt đầu bằng 09, 03 hoặc 08.");
+            $("#phoneNumber").focus();
+            return;
+        }
+        if (!emailRegex.test(email)) {
+            alert("Email không hợp lệ. Phải chứa @ và kết thúc bằng .com.");
+            $("#email").focus();
+            return;
+        }
+        if (!learningMode) {
+            alert("Hãy chọn hình thức học.");
+            return;
+        }
+        if (skills.length === 0) {
+            alert("Hãy chọn ít nhất một kỹ năng luyện tập.");
+            return;
+        }
+
+        // Thêm dữ liệu vào bảng
+        const table = $("#registrationTable");
+        const rowCount = table.find("tr").length + 1;
+
+        table.append(`
+      <tr>
+        <td>${rowCount}</td>
+        <td>${fullName}</td>
+        <td>${birthDate}</td>
+        <td>${phoneNumber}</td>
+        <td>${email}</td>
+        <td>${course}</td>
+        <td>${courseDuration}</td>
+        <td>${learningMode}</td>
+        <td>${skills.join(", ")}</td>
+      </tr>
+    `);
+
+        // Đóng modal và reset form
+        $("#modalId").modal("hide");
+        $("#registrationForm")[0].reset();
+        $("#courseDuration").val("");
+    });
+});
+  </script>
+</head>
+<body>
+  <header>
+   
+  </header>
+ <nav class="navbar navbar-expand-sm navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="#">Free English Course</a>
+    <button
+      class="navbar-toggler d-lg-none"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapsibleNavId"
+      aria-controls="collapsibleNavId"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavId">
+      <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" href="#" aria-current="page">Trang chủ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Giới thiệu</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Khóa học</a>
+        </li>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalId">
+          Đăng ký
+        </button>
+      </ul>
+    </div>
+  </div>
+ </nav>
+ 
+<div
+  class="table-responsive"
+>
+  <table
+    class="table table-primary"
+  >
+    <thead>
+      <tr>
+        <th scope="col">Số tt</th>
+        <th scope="col">Họ tên</th>
+        <th scope="col">Ngày sinh</th>
+        <th scope="col">Số điện thoại</th>
+        <th scope="col">Email</th>
+        <th scope="col">Khóa học</th>
+        <th scope="col">Thời gian học</th>
+        <th scope="col">Hình thức học</th>
+        <th scope="col">Kỹ năng luyện tập</th>
+      </tr>
+    </thead>
+    <tbody id="registrationTable"></tbody>
+  </table>
+</div>
+
+ <!-- Modal Body -->
+ <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+ <div
+  class="modal fade"
+  id="modalId"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  
+  role="dialog"
+  aria-labelledby="modalTitleId"
+  aria-hidden="true">
+  <div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitleId">
+          THÔNG TIN ĐĂNG KÝ
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="registrationForm">
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Họ tên</label>
+            <input
+              type="text"
+              class="form-control"
+              name=""
+              id="fullName"
+              aria-describedby="helpId"
+              placeholder=""
+              required           />
+          </div>
+          <div class="mb-3">
+            <label for="birthDate" class="form-label">Ngày sinh</label>
+            <input
+              type="date"
+              class="form-control"
+              name=""
+              id="birthDate"
+              aria-describedby="helpId"
+              placeholder=""
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+            <input
+              type="text"
+              class="form-control"
+              name=""
+              id="phoneNumber"
+              aria-describedby="helpId"
+              placeholder=""
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              name=""
+              id="email"
+              aria-describedby="emailHelpId"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="course" class="form-label">Chọn khóa học</label>
+            <select
+              class="form-select form-select-lg"
+              name=""
+              id="course"
+              required
+            >
+              <option selected>Anh văn cơ bản</option>
+              <option value="Anh văn giao tiếp">Anh văn giao tiếp</option>
+              <option value="Luyện thi IELTS">Luyện thi IELTS</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="courseDuration" class="form-label">Thời gian học</label>
+            <input
+              type="text"
+              class="form-control"
+              name=""
+              id="courseDuration"
+              aria-describedby="helpId"
+              placeholder=""
+              readonly
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Chọn hình thức học</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="Học tại trung tâm" name="learningMode" />
+              <label class="form-check-label" for="">Học tại trung tâm </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value="Học online"
+                name="learningMode"
+              
+              />
+              <label class="form-check-label" for="">Học online</label>
+            </div>
+            
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Các kỹ năng luyện tập</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="Kỹ năng nghe" name="skills"/>
+              <label class="form-check-label" for="">Kỹ năng nghe</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="Kỹ năng đọc" name="skills" />
+              <label class="form-check-label" for="">Kỹ năng đọc</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="Kỹ năng viết" name="skills" />
+              <label class="form-check-label" for="">Kỹ năng viết</label>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button
+              type="button"
+              class="btn btn-secondary me-2"
+              data-bs-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+ </div>
+</body>
+</html>

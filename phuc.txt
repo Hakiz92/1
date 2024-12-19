@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <script src="../js/jquery.js"></script>
+    <script src="../js/bootstrap.js"></script>
+</head>
+
+<style>
+    .error {
+        color: red;
+        font-style: italic;
+    }
+
+    .border {
+        border: 1px solid red;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+
+
+        function ktma() {
+            let ma = $('#txtma').val()
+            let patma = /^MK\d{6}(QQ)$/
+
+            if (patma.test(ma)) {
+                $("#erma").html('*')
+                $("#txtma").removeClass('border')
+                $("#erma").removeClass('error')
+                return true
+            }
+            else {
+                $("#erma").html('Ma sai')
+                $("#txtma").addClass('border')
+                $("#erma").addClass('error')
+                return false
+            }
+        }
+
+
+        function ktten() {
+            let ten = $('#txtten').val()
+            let paten = /^[A-Z][a-z]+( [A-Z][a-z]+)+$/
+            // Tối thiểu 1 từ: ^ [A - Z][a - z] + ([A - Z][a - z] +) * $
+            // Tối thiểu 2 từ: ^ [A - Z][a - z] + ([A - Z][a - z] +) + $
+            // Tối thiểu 3 từ: ^ [A - Z][a - z] + ([A - Z][a - z] +){ 2,} $
+            // Tối thiểu 4 từ: ^ [A - Z][a - z] + ([A - Z][a - z] +){ 3,} $
+
+            if (paten.test(ten)) {
+                $("#erten").html('*')
+                $("#txtten").removeClass('border')
+                $("#erten").removeClass('error')
+                return true
+            }
+            else {
+                $("#erten").html('Ten sai')
+                $("#txtten").addClass('border')
+                $("#erten").addClass('error')
+                return false
+            }
+        }
+
+        function ktdate() {
+            let date = $('#txtdate').val()
+            let newdate = new Date()
+            let inputDate = new Date(date)
+
+            if (inputDate > newdate) {
+                $("#erdate").html('*')
+                $("#txtdate").removeClass('border')
+                $("#erdate").removeClass('error')
+                return true
+            }
+            else {
+                $("#erdate").html('Ngay sai')
+                $("#txtdate").addClass('border')
+                $("#erdate").addClass('error')
+                return false
+            }
+        }
+        $("#txtma").blur(function (e) {
+            ktma()
+        })
+
+        $('#txtten').blur(function (e) {
+            ktten()
+        })
+        $('#txtdate').blur(function (e) {
+            ktdate()
+        })
+
+
+        $("#btn").click(function (e) {
+            e.preventDefault()
+            let ma = $('#txtma').val()
+            let ten = $('#txtten').val()
+            let ngay = $('#txtdate').val()
+            let loaisp = $('#lstloai option:selected').text()
+            let thue = $('#lstloai option:selected').val()
+            let hinhthuc = $('input[name="tt"]:checked').val()
+            let loaihanghoa = []
+            $.each($('input[name="loaihh"]:checked'), function (e) {
+                loaihanghoa.push($(this).val())
+            })
+            let hinhanh = $('#hinhanh').prop('files')[0]
+
+            let hinhanhUrl = hinhanh ? URL.createObjectURL(hinhanh) : ""
+
+            
+            if ((ktma() && ktten() && ktdate())) {
+                let newRow = `
+                                <tr>
+                                    <td>${ma}</td>
+                                    <td>${ten}</td>
+                                    <td>${ngay}</td>
+                                    <td>${loaisp}</td>
+                                    <td>${thue}</td>
+                                    <td>${hinhthuc}</td>
+                                    <td>${loaihanghoa}</td>
+                                    <td>
+                                        
+                                         ${hinhanh ? `<img src="${hinhanhUrl}" alt="Hình ảnh" style="width:100px; height:auto;">` : 'Không có hình ảnh'}
+
+                                    </td>
+                                </tr>
+                `
+                $("#tblsp").append(newRow)
+                $('#form')[0].reset()
+
+            }
+            else {
+                alert("Dien dung dinh dang cac form r moi them dc ")
+
+            }
+
+        })
+        $("#lstloai").change(function (e) {
+            let thue = $("#lstloai option:selected").val()
+            $('#txtthue').val(thue)
+        })
+    });
+</script>
+
+<body>
+    <div class="container">
+        <div class="row bg-info " style="height: 100px;">
+            <h1 class="text-center">Header </h1>
+        </div>
+
+        <div class="row bg-success">
+            <ul class="nav  ">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" aria-current="page">Active link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <div class="row">
+            <div class="col-2 bg-info">
+                <ul class="nav justify-content-center  ">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" aria-current="page"> link</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalId">Dang ky</a>
+                    </li>
+
+                </ul>
+
+
+            </div>
+
+            <div class="col-10">
+                <div class="table-responsive">
+                    <table class="table table-primary" id="tblsp">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên</th>
+                                <th>Ngày</th>
+                                <th>Loại Sản Phẩm</th>
+                                <th>Loại Hàng Hóa</th>
+                                <th>Hình Thức</th>
+                                <th>Thuế</th>
+                                <th>Hình ảnh</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- Modal Body -->
+        <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+        <div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">
+                            Modal title
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" id="form">
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Ma san pham</label>
+                                <input type="text" name="" id="txtma" class="form-control" placeholder=""
+                                    aria-describedby="helpId" />
+                                <span id="erma" class="text-danger">*</span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Ten san pham</label>
+                                <input type="text" name="" id="txtten" class="form-control" placeholder=""
+                                    aria-describedby="helpId" />
+                                <span id="erten" class="text-danger">*</span>
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Ngay</label>
+                                <input type="date" name="" id="txtdate" class="form-control" placeholder=""
+                                    aria-describedby="helpId" />
+                                <span id="erdate" class="text-danger">*</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Loai san pham</label>
+                                <select class="form-select form-select-lg" name="" id="lstloai">
+                                    <option>Chọn loại sản phẩm </option>
+                                    <option value="5%">New Delhi</option>
+                                    <option value="10%">Istanbul</option>
+                                    <option value="20%">Jakarta</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Thue</label>
+                                <input type="text" name="" id="txtthue" class="form-control" placeholder=""
+                                    aria-describedby="helpId" disabled />
+
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Hình thức</label>
+                                <br />
+                                <input class="form-check-input" type="radio" name="tt" />Online
+                                <input class="form-check-input" type="radio" name="tt" />Tien mat
+
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Loại hàng hóa </label>
+                                <br />
+                                <input class="form-check-input" type="checkbox" name="loaihh" />Xuat khau
+                                <input class="form-check-input" type="checkbox" name="loaihh" />Nhap khau
+
+
+                            </div>
+
+
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Hình ảnh</label>
+                                <br />
+                                <input class="form-check-input" type="file" name="file" id="hinhanh" />Xuat khau
+
+
+
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="btn">
+                                Submit
+                            </button>
+
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional: Place to the bottom of scripts -->
+
+
+    </div>
+
+</body>
+
+</html>
